@@ -14,6 +14,9 @@ object Main extends Logging {
 
   //Integers from 26 to 1.
   val perfectPermutation: Permutation = (26 to (1, -1)).toArray
+  //My testcases would not have caught me if I had, say, used the 'until' operator,
+  //giving me numbers from 26 to 2, instead of the 'to' operator. But of course it would
+  //have made a difference for the real input.
   println(perfectPermutation.toSeq)
 
   //Simple vector dot product.
