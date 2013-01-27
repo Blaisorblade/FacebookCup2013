@@ -7,7 +7,7 @@ trait Logging {
   def println(msg: Any) = if (debug) Console.err.println(msg)
 }
 
-object Main extends Logging {
+object Main extends Logging with CmdlineInput {
   type Permutation = Array[Int]
   type Histogram = Array[Int]
   type HistogramMap = Map[Char, Int]
@@ -33,20 +33,12 @@ object Main extends Logging {
   }
 
   def main(args: Array[String]) {
-    val inp =
-      if (args.length > 0)
-        Source.fromFile(args(0))
-      else
-        Source.stdin
-    val lines: Array[String] = inp.getLines.toArray
-
-    val m = Integer.parseInt(lines(0)) //at most 50.
-    for (i <- 1 to m) {
-      val line = lines(i) //max length: 500
-      val histogramMap = buildHistogramMap(line)
-      println(histogramMap)
-      val maxBeauty = getMaxBeauty(histogramMap)
-      Console.println(s"Case #${i}: ${maxBeauty}")
+    val (lines, m) = getInputAndCount(args) //m is at most 50.
+    processInput(lines, m) {
+      line =>
+        val histogramMap = buildHistogramMap(line)
+        println(histogramMap)
+        getMaxBeauty(histogramMap)
     }
   }
   
