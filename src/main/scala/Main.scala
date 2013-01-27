@@ -21,10 +21,9 @@ object Main extends Logging {
     } sum;
 
   def getMaxBeauty(wordHist: HistogramMap): Int = {
-    val sortedHist = wordHist.values.toArray sorted Ordering[Int].reverse
-//    println(sortedHist.toSeq)
-//    println(perfectPermutation.toSeq)
-    beauty(perfectPermutation, sortedHist)
+    val sortedHist = (wordHist.toArray sortBy (_._2))(Ordering[Int].reverse)
+    println(sortedHist.toSeq)
+    beauty(perfectPermutation, sortedHist map (_._2))
   }
 
   def main(args: Array[String]) {
@@ -38,7 +37,9 @@ object Main extends Logging {
     val m = Integer.parseInt(lines.next) //at most 50.
     for (i <- 1 to m) {
       val line = lines.next //max length: 500
-      val maxBeauty = getMaxBeauty(buildHistogramMap(line))
+      val histogramMap = buildHistogramMap(line)
+      println(histogramMap)
+      val maxBeauty = getMaxBeauty(histogramMap)
       Console.println(s"Case #${i}: ${maxBeauty}")
     }
   }
