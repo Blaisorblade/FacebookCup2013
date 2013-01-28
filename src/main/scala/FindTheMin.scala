@@ -72,6 +72,7 @@ object FindTheMin extends CmdlineInput with Logging {
       val initialPrioQContent = 0 to k filterNot hist.contains
       val priorityQueue = new PriorityQueue(initialPrioQContent.asJava)
 
+      var pqGotToSizeOne = true
       var idx = k
       while (idx < n) {
         val minAbsent = (priorityQueue peek)
@@ -88,6 +89,12 @@ object FindTheMin extends CmdlineInput with Logging {
         }
         ringBuffer += minAbsent
         idx += 1
+        if (priorityQueue.size() == 1 && pqGotToSizeOne) {
+          pqGotToSizeOne = false
+          assert(idx == 2 * k)
+        }
+        if (!pqGotToSizeOne)
+          assert(priorityQueue.size() == 1)
         //if (idx % k == k - 1)
           //println(ringBuffer.buf.toSeq)
       }
