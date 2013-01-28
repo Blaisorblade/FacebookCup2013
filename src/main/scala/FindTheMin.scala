@@ -42,18 +42,7 @@ object FindTheMin extends CmdlineInput with Logging {
 
   def fillArray(a: Long, b: Long, c: Long, r: Long, k: Int) = {
     def next(state: Long) = b * state + c % r
-    val ret = ArrayBuffer.empty[Long]
-    ret.sizeHint(k)
-    var state = a
-    var i: Int = 0
-    while (i < k) {
-      ret += state
-      state = next(state)
-      i += 1
-    }
-    val ret2 = ArrayBuffer.iterate(a, k)(next) 
-    assert (ret == ret2)
-    ret2
+    ArrayBuffer.iterate(a, k)(next) 
   }
 
   def split(str: String) = str split ' '
