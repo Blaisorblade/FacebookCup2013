@@ -13,7 +13,7 @@ trait CmdlineInput {
     (lines.toArray, m)
   }
   def processInput[S, T](lines: Seq[S], m: Int)(processor: S => T) {
-    for (i <- 1 to m)
+    for (i <- 1 to m) //XXX Should use zipWithIndex, and then i + 1 below. 
       Console.println(s"Case #${i}: ${processor(lines(i - 1))}")
   }
 }
