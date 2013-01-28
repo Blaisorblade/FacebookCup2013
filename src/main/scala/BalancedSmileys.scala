@@ -15,12 +15,6 @@ trait Timing {
 
 trait BalancedSmileys extends RegexParsers {
   override final val skipWhitespace = false
-  /*def validChar: Parser[Elem] = acceptIf {
-    case ' ' => true
-    case ':' => true
-    case x: Char if x.isLower => true
-    case _ => false
-  }(_ => "")*/
 
   val charRegex: Parser[String] = "[a-z ]".r
   //Avoid concatenating strings which we don't use.
@@ -34,22 +28,9 @@ trait BalancedSmileys extends RegexParsers {
           "(" ~> msg <~ ")"
       } <~ opt(msg)
     } | ""
-
-    /*
-    //Much slower:
-    rep((charRegex+) ^^ foldStrs |
-    ":" <~ opt("(" | ")") |
-    "(" ~> msg <~ ")") ^^ foldStrs
-    */
-
-    /*rep("[a-z ]".r) ^^ (strs => (strs fold "")(_ + _)) | //rep(validChar) |
-    ":" <~ opt("(" | ")") |
-    "(" ~> msg <~ ")" |
-    msg ~ msg ^^ (_ + _)*/
 }
 
 object BalancedSmileysDriver extends BalancedSmileys with CmdlineInput with Logging with Timing {
-  val debugFailures = false
   def main(args: Array[String]) {
     val (lines, t) = getInputAndCount(args) //t is at most 50.
     processInput(lines, t) { line =>
@@ -57,15 +38,6 @@ object BalancedSmileysDriver extends BalancedSmileys with CmdlineInput with Logg
         if (msg(line) collectFirst {
           case x @ Success(y, rest) if rest.isEmpty => ()
         } isEmpty) {
-          if (debugFailures) {
-            for (i <- msg(line)) {
-              i match {
-                case failure : Failure =>
-                  println(failure)
-                case _ =>
-              }
-            }
-          }
           "NO"
         } else {
           "YES"
