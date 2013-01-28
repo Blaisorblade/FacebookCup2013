@@ -12,7 +12,7 @@ trait CmdlineInput {
     val m = Integer.parseInt(lines(0))
     (lines, m)
   }
-  def processInput[T](lines: Array[String], m: Int)(processor: String => T) {
+  def processInput[S, T](lines: Seq[S], m: Int)(processor: S => T) {
     for (i <- 1 to m)
       Console.println(s"Case #${i}: ${processor(lines(i))}")
   }
