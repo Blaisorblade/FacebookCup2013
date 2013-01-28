@@ -25,12 +25,12 @@ trait BalancedSmileys extends RegexParsers {
   val charRegex: Parser[String] = "[a-z ]".r
   //Avoid concatenating strings which we don't use.
   def foldStrs(strs: List[String]): String = "" //(strs fold "")(_ + _) 
-  //Making the rep1 a rep makes this grammar indirectly left-recursive, which is bad.
+  //XXX: Making the rep1 a rep makes this grammar indirectly left-recursive, which is bad. Unlike declared, it doesn't seem to work.
   lazy val msg: Parser[String] =
     {
       {
         rep1(charRegex) ^^ foldStrs |
-          ":" <~ ("[()]".r ?) | //Note that opt("(" | ")") in place of ("[()]".r ?) does not work.
+          ":" <~ ("[()]".r ?) | //XXX: Note that opt("(" | ")") in place of ("[()]".r ?) does not work.
           "(" ~> msg <~ ")"
       } <~ opt(msg)
     } | ""
