@@ -1,7 +1,7 @@
-import scala.util.parsing.combinator.PackratParsers
+import scala.util.parsing.combinator.Parsers
 import scala.util.parsing.combinator.RegexParsers
 
-trait BalancedSmileys extends RegexParsers with PackratParsers {
+trait BalancedSmileys extends RegexParsers {
   override def skipWhitespace = false
   /*def validChar: Parser[Elem] = acceptIf {
     case ' ' => true
