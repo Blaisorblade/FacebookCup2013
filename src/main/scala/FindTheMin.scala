@@ -20,7 +20,18 @@ class RingBuffer[T](val buf: Array[T], override val length: Int) extends Indexed
   }
 }
 
-object FindTheMin extends CmdlineInput with Logging {
+//These methods would fit well in Scala's map.
+trait MutableMapUtils {
+  def updateMap[K, V](m: mutable.Map[K, V], k: K)(updater: V => V) {
+    m += (k -> updater(m(k))) 
+  }
+
+  def updateMapWithDefaultOld[K, V](m: mutable.Map[K, V], k: K, defaultOld: V)(updater: V => V) {
+    m += (k -> updater(m getOrElse (k, defaultOld))) 
+  }  
+}
+
+object FindTheMin extends CmdlineInput with Logging with MutableMapUtils {
   def histogram(s: Seq[Int]): mutable.Map[Int, Int] =
     mutable.Map() ++= (s groupBy identity mapValues (_ length))
   /*
@@ -45,14 +56,6 @@ object FindTheMin extends CmdlineInput with Logging {
   def split(str: String) = str split ' '
   def toLongs(str: String) = split(str) map (Long parseLong _)
   def toInts(str: String) = split(str) map (Integer parseInt _)
-
-  def updateMap[K, V](m: mutable.Map[K, V], k: K)(updater: V => V) {
-    m += (k -> updater(m(k))) 
-  }
-
-  def updateMapWithDefaultOld[K, V](m: mutable.Map[K, V], k: K, defaultOld: V)(updater: V => V) {
-    m += (k -> updater(m getOrElse (k, defaultOld))) 
-  }
 
   def main(args: Array[String]) {
     val (lines, t) = getInputAndCount(args) //t is at most 50.
