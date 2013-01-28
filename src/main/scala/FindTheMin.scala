@@ -89,17 +89,37 @@ object FindTheMin extends CmdlineInput with Logging {
         ringBuffer += minAbsent
         idx += 1
       }
-      var missingElement = (priorityQueue peek)
+      val missingElementTransition = (priorityQueue peek)
+      val smartRB =
+        if (idx == 2 * k) {
+          assert(ringBuffer.offset == 0)
+          new RingBuffer(ringBuffer.buf :+ missingElementTransition, k + 1)
+        } else {
+          //offset here won't be 0 iff we ended with idx != 2*k. But that's the slow path, so we can afford slightly less efficiency.
+          new RingBuffer(ringBuffer.toSeq :+ missingElementTransition toArray, k + 1)
+          //In fact, I think we can afford it anyway, but let's play it safe.
+        }
+      //Inner loop. We skip k positions at a time.
+      //Invariant: positions 0 to k - 1 are the last k values, position k is the missing one.
+      while (idx < n - k) {
+        idx += k
+        //This encodes:
+        // smartRB.offset -= 1
+        smartRB.offset += k //position k becomes 0 and goes to be the first, old position k - 1 becomes k and goes to be the new missing one.
+      }
+      //For the last few iterations, we continue using the standard algorithm - with the difference that the priority queue is collapsed to
+      //a single element, the one in 0..k which is not currently in the queue itself.
+      var missingElement = smartRB(k)
+      val newRB = new RingBuffer(smartRB take k toArray, k)
       while (idx < n) {
         val minAbsent = missingElement
-        missingElement = ringBuffer(0)
-        ringBuffer += minAbsent
+        missingElement = newRB(0)
+        newRB += minAbsent
         idx += 1
       }
       
-      //When indexing inside ringBuffer, we are indexing inside the last k values. 
-      //ringBuffer(n - 1).toString
-      ringBuffer(k - 1).toString
+      //When indexing inside ringBuffer/newRB, we are indexing inside the last k values. 
+      newRB(k - 1).toString
     }
   }
 }
