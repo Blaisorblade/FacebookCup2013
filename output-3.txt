@@ -1,0 +1,13 @@
+Case #1: 0
+Case #2: 19
+Case #3: 58
+Case #4: 26
+Case #5: 34
+Case #6: 30
+Case #7: 41
+Case #8: 29
+Case #9: 54
+Case #10: 18389
+Case #11: 38
+Case #12: 76
+Case #13: 42
