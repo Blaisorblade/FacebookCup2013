@@ -62,34 +62,9 @@ object FindTheMin extends CmdlineInput with Logging {
       val (n, k) = (nk(0), nk(1))
       val rngParams: Array[Int] = toInts(linePair(1))
       val (a, b, c, r) = (rngParams(0), rngParams(1), rngParams(2), rngParams(3))
-
-      //Define initial state.
-      val initialArray = fillArray(a, b, c, r, k)
-      val ringBuffer = new RingBuffer(initialArray.toArray, k)
-      val hist = histogram(initialArray)
-      //Now we need a priority queue, but of [0, 10^9] \ initialArray (where \ is set subtraction). Ouch!
-      //But luckily, since we only ever want the min, we can just as well maintain [0, k] \ initialArray.
-      val initialPrioQContent = 0 to k filterNot hist.contains
-      val priorityQueue = new PriorityQueue(initialPrioQContent.asJava)
-
-      var idx = k
-      while (idx < ((2 * k) min n)) {
-        val minAbsent = (priorityQueue peek)
-        val disappearing = ringBuffer(0)
-        if (disappearing != minAbsent) {
-          //We need to update the state
-          updateMap(hist, disappearing)(_ - 1)
-          if (disappearing <= k && hist(disappearing) == 0) {
-            priorityQueue offer disappearing
-          }
-          updateMapWithDefaultOld(hist, minAbsent, 0)(_ + 1)
-          if (minAbsent <= k && hist(minAbsent) == 1)
-            priorityQueue remove minAbsent
-        }
-        ringBuffer += minAbsent
-        idx += 1
-      }
-      val missingElementTransition = (priorityQueue peek)
+      val (ringBuffer, _idx, missingElementTransition) = firstIteration(n, k, a, b, c, r)
+    
+      var idx = _idx
       val smartRB =
         if (idx == 2 * k) {
           assert(ringBuffer.offset == 0)
@@ -129,5 +104,36 @@ object FindTheMin extends CmdlineInput with Logging {
       //When indexing inside ringBuffer/newRB, we are indexing inside the last k values. So we need to take the (k - 1)-th element. 
       newRB(k - 1).toString
     }
+  }
+  
+  private def firstIteration(n: Int, k: Int, a: Int, b: Int, c: Int, r: Int): (RingBuffer[Int], Int, Int) = {
+    //Define initial state.
+    val initialArray = fillArray(a, b, c, r, k)
+    val ringBuffer = new RingBuffer(initialArray.toArray, k)
+    val hist = histogram(initialArray)
+    //Now we need a priority queue, but of [0, 10^9] \ initialArray (where \ is set subtraction). Ouch!
+    //But luckily, since we only ever want the min, we can just as well maintain [0, k] \ initialArray.
+    val initialPrioQContent = 0 to k filterNot hist.contains
+    val priorityQueue = new PriorityQueue(initialPrioQContent.asJava)
+
+    var idx = k
+    while (idx < ((2 * k) min n)) {
+      val minAbsent = (priorityQueue peek)
+      val disappearing = ringBuffer(0)
+      if (disappearing != minAbsent) {
+        //We need to update the state
+        updateMap(hist, disappearing)(_ - 1)
+        if (disappearing <= k && hist(disappearing) == 0) {
+          priorityQueue offer disappearing
+        }
+        updateMapWithDefaultOld(hist, minAbsent, 0)(_ + 1)
+        if (minAbsent <= k && hist(minAbsent) == 1)
+          priorityQueue remove minAbsent
+      }
+      ringBuffer += minAbsent
+      idx += 1
+    }
+    val missingElementTransition = (priorityQueue peek)
+    (ringBuffer, idx, missingElementTransition)
   }
 }
