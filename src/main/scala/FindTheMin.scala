@@ -101,11 +101,19 @@ object FindTheMin extends CmdlineInput with Logging {
         }
       //Inner loop. We skip k positions at a time.
       //Invariant: positions 0 to k - 1 are the last k values, position k is the missing one.
+      /*
       while (idx < n - k) {
         idx += k
         //This encodes:
         // smartRB.offset -= 1
         smartRB.offset += k //position k becomes 0 and goes to be the first, old position k - 1 becomes k and goes to be the new missing one.
+      }
+      */
+      //O(1) variation of the above; I left the above in since what's below is currently unreadable.
+      if (idx < n - k) {
+        val delta = (n - k - idx) / k * k
+        smartRB.offset += delta// % (k + 1)
+        idx += delta
       }
       //For the last few iterations, we continue using the standard algorithm - with the difference that the priority queue is collapsed to
       //a single element, the one in 0..k which is not currently in the queue itself.
