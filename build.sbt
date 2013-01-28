@@ -11,3 +11,5 @@ scalacOptions += "-feature"
 seq(SbtStartScript.startScriptForClassesSettings: _*)
 
 mainClass in Compile := Some("BalancedSmileysDriver")
+
+libraryDependencies += "com.codecommit" %% "gll-combinators" % "2.2-SNAPSHOT"
