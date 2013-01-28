@@ -9,12 +9,12 @@ import collection.convert.decorateAsJava._
 class RingBuffer[T](val buf: Array[T], override val length: Int) extends IndexedSeq[T] {
   var offset = 0
 
-  private def idxFor(idx: Int): Int =
+  @inline private def idxFor(idx: Int): Int =
     (idx + offset) % length
 
-  def apply(idx: Int) = buf(idxFor(idx))
+  @inline def apply(idx: Int) = buf(idxFor(idx))
 
-  def +=(el: T) = {
+  @inline def +=(el: T) = {
     buf(idxFor(0)) = el
     offset = (offset + 1) % length
   }
