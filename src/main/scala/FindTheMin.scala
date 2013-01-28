@@ -62,15 +62,15 @@ object FindTheMin extends CmdlineInput with Logging {
       val (n, k) = (nk(0), nk(1))
       val rngParams: Array[Int] = toInts(linePair(1))
       val (a, b, c, r) = (rngParams(0), rngParams(1), rngParams(2), rngParams(3))
-      val (ringBuffer, _idx, missingElementTransition) = firstIteration(n, k, a, b, c, r)
-    
-      var idx = _idx
-      val (smartRB, idx2) = secondPhase(n, k, ringBuffer, missingElementTransition, idx)
-      idx = idx2
-      //For the last few iterations, we continue using the standard algorithm - with the difference that the priority queue is collapsed to
+
+      val (ringBuffer, idxAfterFirstPhase, missingElementTransition) = firstPhase(n, k, a, b, c, r)
+      val (smartRB, idxAfterSecondPhase) = secondPhase(n, k, ringBuffer, missingElementTransition, idxAfterFirstPhase)
+
+      //For the last few iterations, we continue using the standard algorithm from firstPhase - with the difference that the priority queue is collapsed to
       //a single element, the one in 0..k which is not currently in the queue itself.
       var missingElement = smartRB(k)
       val newRB = new RingBuffer(smartRB take k toArray, k)
+      var idx = idxAfterSecondPhase
       while (idx < n) {
         val minAbsent = missingElement
         missingElement = newRB(0)
@@ -83,7 +83,7 @@ object FindTheMin extends CmdlineInput with Logging {
     }
   }
   
-  private def firstIteration(n: Int, k: Int, a: Int, b: Int, c: Int, r: Int): (RingBuffer[Int], Int, Int) = {
+  private def firstPhase(n: Int, k: Int, a: Int, b: Int, c: Int, r: Int): (RingBuffer[Int], Int, Int) = {
     //Define initial state.
     val initialArray = fillArray(a, b, c, r, k)
     val ringBuffer = new RingBuffer(initialArray.toArray, k)
