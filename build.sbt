@@ -6,7 +6,7 @@ scalaVersion := "2.10.0"
 
 scalacOptions += "-feature"
 
-//scalacOptions += "-optimize"
+scalacOptions += "-optimize"
 
 seq(SbtStartScript.startScriptForClassesSettings: _*)
 
