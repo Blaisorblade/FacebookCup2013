@@ -7,13 +7,13 @@ trait CmdlineInput {
         Source.fromFile(args(0))
       else
         Source.stdin
-    val lines: Array[String] = inp.getLines.toArray
+    val lines: Iterator[String] = inp.getLines
 
-    val m = Integer.parseInt(lines(0))
-    (lines, m)
+    val m = Integer.parseInt(lines.next)
+    (lines.toArray, m)
   }
   def processInput[S, T](lines: Seq[S], m: Int)(processor: S => T) {
     for (i <- 1 to m)
-      Console.println(s"Case #${i}: ${processor(lines(i))}")
+      Console.println(s"Case #${i}: ${processor(lines(i - 1))}")
   }
 }

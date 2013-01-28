@@ -61,7 +61,7 @@ object FindTheMin extends CmdlineInput with Logging {
   def toInts(str: String) = split(str) map (Integer parseInt _)
   def main(args: Array[String]) {
     val (lines, t) = getInputAndCount(args) //t is at most 50.
-    processInput(lines.tail.grouped(2).toSeq, t) { linePair =>
+    processInput(lines.grouped(2).toSeq, t) { linePair =>
       val nk = toInts(linePair(0))
       val (n, k) = (nk(0), nk(1))
       val rngParams = toLongs(linePair(1))
