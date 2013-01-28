@@ -12,7 +12,8 @@ trait BalancedSmileys extends RegexParsers {
   }(_ => "")*/
 
   val charRegex: Parser[String] = "[a-z ]".r
-  def foldStrs(strs: List[String]): String = (strs fold "")(_ + _) 
+  //Avoid concatenating strings which we don't use.
+  def foldStrs(strs: List[String]): String = "" //(strs fold "")(_ + _) 
   //Making the rep1 a rep makes this grammar indirectly left-recursive, which is bad.
   lazy val msg: Parser[String] =
     {
@@ -37,17 +38,20 @@ trait BalancedSmileys extends RegexParsers {
 }
 
 object BalancedSmileysDriver extends BalancedSmileys with CmdlineInput with Logging {
+  val debugFailures = false
   def main(args: Array[String]) {
     val (lines, t) = getInputAndCount(args) //t is at most 50.
     processInput(lines, t) { line =>
       if (msg(line) collectFirst {
         case x @ Success(y, rest) if rest.isEmpty => ()
       } isEmpty) {
-        for (i <- msg(line)) {
-          i match {
-            case failure : Failure =>
-              println(failure)
-            case _ =>
+        if (debugFailures) {
+          for (i <- msg(line)) {
+            i match {
+              case failure : Failure =>
+                println(failure)
+              case _ =>
+            }
           }
         }
         "NO"
