@@ -6,14 +6,6 @@ import mutable.{ArrayBuffer}
 import java.util.{PriorityQueue, TreeSet}
 import collection.convert.decorateAsJava._
 
-/*
-class RingBuffer[T](buf: Array[T], override val length: Int) extends IndexedSeq[T] with IndexedSeqLike[T, RingBuffer[T]] {
-  var offset = 0
-  def apply(idx: Int) = buf(idx + offset % length)
-  def +=(el: T)
-}
-*/
-
 class RingBuffer[T](val buf: Array[T], val length: Int) {
   private var offset = 0
 
@@ -32,9 +24,7 @@ object FindTheMin extends CmdlineInput with Logging {
   def histogram(s: Seq[Int]): mutable.Map[Int, Int] =
     mutable.Map() ++= (s groupBy identity mapValues (_ length))
   /*
-  def slidingWindow(s: Seq[Long], k: Int) = {
-    //(s takeRight k zipWithIndex) groupBy (_._2)
-
+  def slidingWindow(s: Seq[Long], k: Int) {
     //We need to incrementally maintain this when new elements are added at the end of s,
     //so that the sliding window moves.
     (s takeRight k groupBy identity mapValues (_ length) keySet)
@@ -42,7 +32,6 @@ object FindTheMin extends CmdlineInput with Logging {
     //That requires a priority queue - in pseudocode:
     //(s takeRight k groupBy identity mapValues (_ length) keySet) toPriorityQueue
     //But we need a priority queue with the complement of the above!  
-    ()
   }
   */
 
@@ -81,11 +70,7 @@ object FindTheMin extends CmdlineInput with Logging {
       //Now we need a priority queue, but of [0, 10^9] \ initialArray (where \ is set subtraction). Ouch!
       //But luckily, since we only ever want the min, we can just as well maintain [0, k] \ initialArray.
       val initialPrioQContent = 0 to k filterNot hist.contains
-
-      //PriorityQueue(initialPrioQContent: _*)(Ordering[Int].reverse)
-      val ts = new TreeSet(Ordering[Int]/*.reverse*/)
-      ts.addAll(initialPrioQContent.asJava)
-      val priorityQueue = new PriorityQueue(ts)
+      val priorityQueue = new PriorityQueue(initialPrioQContent.asJava)
 
       var idx = k
       while (idx < n) {
@@ -109,7 +94,6 @@ object FindTheMin extends CmdlineInput with Logging {
       //When indexing inside ringBuffer, we are indexing inside the last k values. 
       //ringBuffer(n - 1).toString
       ringBuffer(k - 1).toString
-      //""
     }
   }
 }
