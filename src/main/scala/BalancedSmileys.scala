@@ -58,21 +58,6 @@ object BalancedSmileysDriver extends BalancedSmileys with CmdlineInput with Logg
       } else {
         "YES"
       }
-      /*msg(line).head match {
-        case Success(x, rest) =>
-          /*val src = rest.source
-          val parsed = src.subSequence(rest.offset, src.length)
-          println(s"Of line '${line}' only '${parsed}' left")*/
-          if (rest.isEmpty)
-            "YES"
-          else {
-            println(rest)
-            "NO"
-          }
-        case failure : Failure =>
-          println(failure.data)
-          "NO"
-      }*/
     }
   }
 }
