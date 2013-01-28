@@ -10,18 +10,19 @@ trait BalancedSmileys extends RegexParsers {
     case _ => false
   }(_ => "")*/
 
+  val charRegex = "[a-z ]".r
   def msg: Parser[String] =
-    rep("[a-z ]".r) ^^ (strs => (strs fold "")(_ + _)) | //rep(validChar) |
+    ((rep1(charRegex) ^^ (strs => (strs fold "")(_ + _)) | //rep(validChar) |
     ":" <~ opt("(" | ")") |
-    "(" ~> msg <~ ")" |
-    msg ~ msg ^^ {case a ~ b => a + b}
+    "(" ~> msg <~ ")") <~ opt(msg)) | ""
+    //rep1(msg) ^^ (strs => (strs fold "")(_ + _))
 }
 
 object BalancedSmileysDriver extends BalancedSmileys with CmdlineInput with Logging {
   def main(args: Array[String]) {
     val (lines, t) = getInputAndCount(args) //t is at most 50.
     processInput(lines, t) { line =>
-      parse(msg, line) match {
+      parseAll(msg, line) match {
         case Success(x, rest) =>
           val src = rest.source
           val parsed = src.subSequence(rest.offset, src.length)
