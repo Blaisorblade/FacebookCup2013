@@ -126,7 +126,7 @@ object FindTheMin extends CmdlineInput with Logging {
         idx += 1
       }
       
-      //When indexing inside ringBuffer/newRB, we are indexing inside the last k values. 
+      //When indexing inside ringBuffer/newRB, we are indexing inside the last k values. So we need to take the (k - 1)-th element. 
       newRB(k - 1).toString
     }
   }
