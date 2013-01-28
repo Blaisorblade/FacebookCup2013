@@ -94,11 +94,11 @@ object FindTheMin extends CmdlineInput with Logging {
         if (disappearing != minAbsent) {
           //We need to update the state
           updateMap(hist, disappearing)(_ - 1)
-          if (disappearing <= k + 1 && hist(disappearing) == 0) {
+          if (disappearing <= k && hist(disappearing) == 0) {
             priorityQueue offer disappearing
           }
           updateMapWithDefaultOld(hist, minAbsent, 0)(_ + 1)
-          if (minAbsent <= k + 1 && hist(minAbsent) == 1)
+          if (minAbsent <= k && hist(minAbsent) == 1)
             priorityQueue remove minAbsent
         }
         ringBuffer += minAbsent
