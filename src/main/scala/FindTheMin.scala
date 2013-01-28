@@ -6,8 +6,8 @@ import mutable.{ArrayBuffer}
 import java.util.{PriorityQueue, TreeSet}
 import collection.convert.decorateAsJava._
 
-class RingBuffer[T](val buf: Array[T], val length: Int) {
-  private var offset = 0
+class RingBuffer[T](val buf: Array[T], override val length: Int) extends IndexedSeq[T] {
+  var offset = 0
 
   private def idxFor(idx: Int): Int =
     (idx + offset) % length
