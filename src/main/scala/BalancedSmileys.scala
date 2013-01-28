@@ -18,7 +18,7 @@ trait BalancedSmileys extends RegexParsers {
     {
       {
         rep1(charRegex) ^^ foldStrs |
-          ":" <~ ("[()]".r ?) |
+          ":" <~ opt("(" | ")") |
           "(" ~> msg <~ ")"
       } <~ opt(msg)
     } | ""
