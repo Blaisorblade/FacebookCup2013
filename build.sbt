@@ -9,3 +9,5 @@ scalacOptions += "-feature"
 //scalacOptions += "-optimize"
 
 seq(SbtStartScript.startScriptForClassesSettings: _*)
+
+mainClass in Compile := Some("BalancedSmileysDriver")
