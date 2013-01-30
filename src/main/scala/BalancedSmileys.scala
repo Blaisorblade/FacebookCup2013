@@ -23,11 +23,22 @@ trait BalancedSmileys extends RegexParsers {
   lazy val msg: Parser[String] =
     {
       {
-        rep1(charRegex) ^^ foldStrs |
+        rep1(charRegex) ^^ foldStrs | //rep1 instead of rep avoids hidden left recursion, but that's not really needed - not for correctness.
           ":" <~ ("[()]".r ?) | //XXX: Note that opt("(" | ")") in place of ("[()]".r ?) does not work.
           "(" ~> msg <~ ")"
       } <~ opt(msg)
     } | ""
+
+   /*
+    rep((charRegex+) ^^ foldStrs |
+    ":" <~ opt("[()]".r) |
+    "(" ~> msg <~ ")") ^^ foldStrs
+    */
+
+    /*rep("[a-z ]".r) ^^ foldStrs | //rep(validChar) |
+    ":" <~ opt("[()]".r) |
+    "(" ~> msg <~ ")" |
+    msg ~ msg ^^ (_ + _)*/
 }
 
 object BalancedSmileysDriver extends BalancedSmileys with CmdlineInput with Logging with Timing {
