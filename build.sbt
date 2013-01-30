@@ -10,6 +10,6 @@ scalacOptions += "-optimize"
 
 seq(SbtStartScript.startScriptForClassesSettings: _*)
 
-mainClass in Compile := Some("FindTheMin")
+//mainClass in Compile := Some("FindTheMin")
 
 libraryDependencies += "com.codecommit" %% "gll-combinators" % "2.2-SNAPSHOT"
