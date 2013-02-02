@@ -58,8 +58,8 @@ object Prob3 extends Logging with CmdlineInput {
       }
       var count = 0
       for {
-        x <- 0 to (params.w - params.p - 1)
-        y <- 0 to (params.h - params.q - 1)
+        x <- 0 to (params.w - params.p)
+        y <- 0 to (params.h - params.q)
       } {
         //if (tree.query(pixel2Envelope(Point(x, y))).size() == 0) {
         if (tree.query(pixel2PictureEnvelope(Point(x, y), params)).size() == 0) {
