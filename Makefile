@@ -1,5 +1,4 @@
-ROUND=qualification
-#ROUND=round1
+ROUND=round1
 BASESRC=src/main/scala
 UTILS=$(BASESRC)/util
 SRCPATH=$(BASESRC)/$(ROUND)
