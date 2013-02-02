@@ -38,6 +38,11 @@ object Prob3 extends Logging with CmdlineInput {
   }
   def pixel2Envelope(p: Point): Envelope = new Envelope(p.x, p.x + 1, p.y, p.y + 1)
 
+  def pixel2PictureEnvelope(v: Point, params: Params): Envelope = {
+    import params._
+    new Envelope(v.x + eps, v.x + p - eps, v.y + eps, v.y + q - eps)
+  }
+
   def main(args: Array[String]) {
     val (lines, m) = getInputAndCount(args)
     processInput(lines, m) { line =>
@@ -48,7 +53,7 @@ object Prob3 extends Logging with CmdlineInput {
       val deadPixels = fillArray(params)
       println(deadPixels)
       for (p <- deadPixels) {
-        val env = pixel2DeadAreaEnvelope(p, params)
+        val env = pixel2Envelope(p)//pixel2DeadAreaEnvelope(p, params)
         tree.insert(env, (env, p))
       }
       var count = 0
@@ -56,8 +61,10 @@ object Prob3 extends Logging with CmdlineInput {
         x <- 0 to (params.w - params.p - 1)
         y <- 0 to (params.h - params.q - 1)
       } {
-        if (tree.query(pixel2Envelope(Point(x, y))).size() == 0) {
+        //if (tree.query(pixel2Envelope(Point(x, y))).size() == 0) {
+        if (tree.query(pixel2PictureEnvelope(Point(x, y), params)).size() == 0) {
           count += 1
+          println(Point(x, y))
         }
       }
       s"${count}"
