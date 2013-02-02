@@ -45,6 +45,9 @@ object Prob3 extends Logging with CmdlineInput {
 
   def main(args: Array[String]) {
     val (lines, m) = getInputAndCount(args)
+    //We should get the same solution both ways.
+    val bigDeadRectangles = args(1).toBoolean
+
     processInput(lines, m) { line =>
       val nk = toInts(line)
       val params = Params(nk(0), nk(1), nk(2), nk(3), nk(4), nk(5),
@@ -53,8 +56,12 @@ object Prob3 extends Logging with CmdlineInput {
       val deadPixels = fillArray(params)
       println(deadPixels)
       for (p <- deadPixels) {
-        //val env = pixel2Envelope(p)
-        val env = pixel2DeadAreaEnvelope(p, params)
+        val env =
+          if (bigDeadRectangles)
+            pixel2DeadAreaEnvelope(p, params)
+          else
+            pixel2Envelope(p)
+        //println(env)
         tree.insert(env, (env, p))
       }
       var count = 0
@@ -62,8 +69,12 @@ object Prob3 extends Logging with CmdlineInput {
         x <- 0 to (params.w - params.p)
         y <- 0 to (params.h - params.q)
       } {
-        if (tree.query(pixel2Envelope(Point(x, y))).size() == 0) {
-        //if (tree.query(pixel2PictureEnvelope(Point(x, y), params)).size() == 0) {
+        val queryEnv =
+          if (bigDeadRectangles)
+            pixel2Envelope(Point(x, y))
+          else
+            pixel2PictureEnvelope(Point(x, y), params)
+        if (tree.query(queryEnv).size() == 0) {
           count += 1
           println(Point(x, y))
         }
