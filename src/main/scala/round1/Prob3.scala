@@ -34,7 +34,7 @@ object Prob3 extends Logging with CmdlineInput {
   //Note that we convert from pixels (squares of size 1) to real size-0 points! The point is the top-left point of the pixel.
   def pixel2DeadAreaEnvelope(v: Point, params: Params): Envelope = {
     import params._
-    new Envelope(v.x - p + 1 + eps, v.x + p - eps, v.y - q + 1 + eps, v.y + q - eps)
+    new Envelope(v.x - p + 1 + eps, v.x + 1 - eps, v.y - q + 1 + eps, v.y + 1 - eps)
   }
   def pixel2Envelope(p: Point): Envelope = new Envelope(p.x, p.x + 1, p.y, p.y + 1)
 
