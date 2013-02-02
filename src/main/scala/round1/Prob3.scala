@@ -53,7 +53,8 @@ object Prob3 extends Logging with CmdlineInput {
       val deadPixels = fillArray(params)
       println(deadPixels)
       for (p <- deadPixels) {
-        val env = pixel2Envelope(p)//pixel2DeadAreaEnvelope(p, params)
+        //val env = pixel2Envelope(p)
+        val env = pixel2DeadAreaEnvelope(p, params)
         tree.insert(env, (env, p))
       }
       var count = 0
@@ -61,8 +62,8 @@ object Prob3 extends Logging with CmdlineInput {
         x <- 0 to (params.w - params.p)
         y <- 0 to (params.h - params.q)
       } {
-        //if (tree.query(pixel2Envelope(Point(x, y))).size() == 0) {
-        if (tree.query(pixel2PictureEnvelope(Point(x, y), params)).size() == 0) {
+        if (tree.query(pixel2Envelope(Point(x, y))).size() == 0) {
+        //if (tree.query(pixel2PictureEnvelope(Point(x, y), params)).size() == 0) {
           count += 1
           println(Point(x, y))
         }
