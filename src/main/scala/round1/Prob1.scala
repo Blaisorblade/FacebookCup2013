@@ -33,8 +33,17 @@ object Prob1 extends Logging with CmdlineInput {
 
       //Compute a new factorial in O(1) time.
       def nextCombinations(i: Int): BigInt =
-        (currCombinations * (n - k - i) *
-          ((n - i - 1) modInverse constantMod)) % constantMod
+        try {
+          if (n - i - 1 != 0)
+            (currCombinations * (n - k - i) *
+              ((n - i - 1) modInverse constantMod)) % constantMod
+          else 0
+        } catch {
+          case e: ArithmeticException =>
+            e.printStackTrace
+            println((n, k, i))
+            throw e
+        }
 
       (for ((el, i) <- b.zipWithIndex.take(n - k + 1))
       yield {
