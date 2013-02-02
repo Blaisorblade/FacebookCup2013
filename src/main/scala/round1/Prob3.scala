@@ -5,7 +5,7 @@ import com.vividsolutions.jts.geom.Envelope
 import scala.collection.mutable
 import mutable.ArrayBuffer
 
-object Prob3 extends Logging with CmdlineInput {
+object Prob3 extends Logging with CmdlineInput with Timing {
   def split(str: String) = str split ' '
   def toInts(str: String) = split(str) map (Integer parseInt _)
 
@@ -49,6 +49,7 @@ object Prob3 extends Logging with CmdlineInput {
     val bigDeadRectangles = args(1).toBoolean
 
     processInput(lines, m) { line =>
+      timed {
       val nk = toInts(line)
       val params = Params(nk(0), nk(1), nk(2), nk(3), nk(4), nk(5),
           nk(6), nk(7), nk(8), nk(9), nk(10))
@@ -80,6 +81,7 @@ object Prob3 extends Logging with CmdlineInput {
         }
       }
       s"${count}"
+      }
     }
   }
 }
