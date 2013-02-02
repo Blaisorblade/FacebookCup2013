@@ -29,7 +29,7 @@ object Prob3 extends Logging with CmdlineInput with Timing {
     ArrayBuffer.iterate(Point(x, y), n)(next)
   }
 
-  val eps = 0.01
+  val eps = 0.5
   //v for vertex.
   //Note that we convert from pixels (squares of size 1) to real size-0 points! The point is the top-left point of the pixel.
   def pixel2DeadAreaEnvelope(v: Point, params: Params): Envelope = {
