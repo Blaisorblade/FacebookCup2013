@@ -11,7 +11,7 @@ object Prob1 extends Logging with CmdlineInput {
   val constantModInt: Int = 1000 * 1000 * 1000 + 7
   val constantMod: BigInt = constantModInt
 
-  def fact(n: Int, k: Int): BigInt = {
+  def combinations(n: Int, k: Int): BigInt = {
     var res: BigInt = 1
     for (i <- 1 to k) {
       res = (res * (n - i + 1)) * (i modInverse constantMod)
@@ -29,22 +29,23 @@ object Prob1 extends Logging with CmdlineInput {
 
       //O(n) calculation - done one time only.
       //This needs to be a BigInt because it will get huge.
-      var currFact: BigInt = fact(n - 1, k - 1)
+      var currCombinations: BigInt = combinations(n - 1, k - 1)
 
       //Compute a new factorial in O(1) time.
-      def nextFact(i: Int): BigInt =
-        currFact * (n - k - i) * ((n - i - 1) modInverse constantMod) % constantMod
+      def nextCombinations(i: Int): BigInt =
+        (currCombinations * (n - k - i) *
+          ((n - i - 1) modInverse constantMod)) % constantMod
 
       (for ((el, i) <- b.zipWithIndex.take(n - k + 1))
       yield {
-        //println((el, i, currFact, fact(n - 1 - i, k - 1)))
+        //println((el, i, currCombinations, combinations(n - 1 - i, k - 1)))
         //This assertion is not constant-time.
-        //assert(currFact == fact(n - 1 - i, k - 1))
+        //assert(currCombinations == combinations(n - 1 - i, k - 1))
 
         //Warning: we must do this multiplication mod constantMod. We
         //need to use at least Longs.
-        val res = el * currFact % constantMod
-        currFact = nextFact(i) //O(1)
+        val res = el * currCombinations % constantMod
+        currCombinations = nextCombinations(i) //O(1)
         res
       }).fold[BigInt](0)((a, b) => (a + b) % constantMod).toString //O(n)
     }
@@ -52,6 +53,7 @@ object Prob1 extends Logging with CmdlineInput {
 }
 
 /*
+A quick test for your combinations function:
 import round1.Prob1._
-assert(fact(100,50)-fact(99,50)-fact(99,49) % constantMod == 0)
+assert((combinations(100,50)-combinations(99,50)-combinations(99,49)) % constantMod == (0:BigInt))
  */
