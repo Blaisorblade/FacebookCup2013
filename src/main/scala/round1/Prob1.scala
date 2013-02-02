@@ -45,9 +45,8 @@ object Prob1 extends Logging with CmdlineInput {
         //need to use at least Longs.
         val res = el * currFact % constantMod
         currFact = nextFact(i) //O(1)
-        assert (res.isValidInt)
-        res intValue()
-      }).fold(0)((a, b) => (a + b) % constantModInt).toString //O(n)
+        res
+      }).fold[BigInt](0)((a, b) => (a + b) % constantMod).toString //O(n)
     }
   }
 }
