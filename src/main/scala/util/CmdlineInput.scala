@@ -1,3 +1,4 @@
+package util
 import io.Source
 
 trait CmdlineInput {

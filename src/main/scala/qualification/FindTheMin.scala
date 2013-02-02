@@ -1,3 +1,6 @@
+package qualification
+
+import util._
 import java.lang.Long
 import language.postfixOps
 import scala.collection.IndexedSeqLike

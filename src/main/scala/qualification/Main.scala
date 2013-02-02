@@ -1,11 +1,9 @@
+package qualification
+
+import util._
 import io.Source
 import collection.mutable.ArrayBuffer
 import language.postfixOps
-
-trait Logging {
-  val debug = true
-  def println(msg: Any) = if (debug) Console.err.println(msg)
-}
 
 object Main extends Logging with CmdlineInput {
   type Permutation = Array[Int]
