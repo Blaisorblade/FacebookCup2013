@@ -37,7 +37,7 @@ object Prob1 extends Logging with CmdlineInput {
           if (n - i - 1 != 0)
             (currCombinations * (n - k - i) *
               ((n - i - 1) modInverse constantMod)) % constantMod
-          else 0
+          else 1
         } catch {
           case e: ArithmeticException =>
             e.printStackTrace
