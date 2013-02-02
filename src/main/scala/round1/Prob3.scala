@@ -55,7 +55,7 @@ object Prob3 extends Logging with CmdlineInput with Timing {
           nk(6), nk(7), nk(8), nk(9), nk(10))
       val tree = new STRtree()
       val deadPixels = fillArray(params)
-      println(deadPixels)
+      //println(deadPixels)
       for (p <- deadPixels) {
         val env =
           if (bigDeadRectangles)
@@ -77,7 +77,7 @@ object Prob3 extends Logging with CmdlineInput with Timing {
             pixel2PictureEnvelope(Point(x, y), params)
         if (tree.query(queryEnv).size() == 0) {
           count += 1
-          println(Point(x, y))
+          //println(Point(x, y))
         }
       }
       s"${count}"
