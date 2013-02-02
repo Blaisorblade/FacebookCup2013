@@ -5,7 +5,7 @@ import io.Source
 import collection.mutable.ArrayBuffer
 import language.postfixOps
 
-object Main extends Logging with CmdlineInput {
+object BeautifulStrings extends Logging with CmdlineInput {
   type Permutation = Array[Int]
   type Histogram = Array[Int]
   type HistogramMap = Map[Char, Int]
