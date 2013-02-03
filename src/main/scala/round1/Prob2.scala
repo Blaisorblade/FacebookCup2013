@@ -121,6 +121,11 @@ object Prob2 extends Logging with CmdlineInput {
     def compatibleAndFree_i2jView(i: Int) = (0 until m).view map (compatibleAndFree_j2i(_: Int)(i))
       //((j: Int) => compatibleAndFree_j2i(j)(i)/*compatible_i2j(i)(j) && !(solution.j2i contains j) && !(solution.i2j contains i)*/)
 
+    val infScore = "z"
+    val scores_i2j = Array.tabulate(m, m) {
+        (i, j) => if (compatible_i2j(i)(j)) lowestMergeStrings(k1(i), k2(j)) else infScore
+      }
+
     var stuffChanged = true
     while (stuffChanged) {
       stuffChanged = false
