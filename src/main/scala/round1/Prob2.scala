@@ -83,6 +83,19 @@ object Prob2 extends Logging with CmdlineInput {
     val k1Map = str2LocationMap(k1)
     val k2Map = str2LocationMap(k2)
 
+    val compatible_j2i = Array.tabulate(m, m) {
+        (j, i) => compatibleStrings(k2(j), k1(i))
+      }
+    //Transpose
+    val compatible_i2j = Array.tabulate(m, m) {
+        (i, j) => compatible_j2i(j)(i)
+      }
+
+    val infScore = "z"
+    val scores_i2j: Array[Array[String]] = Array.tabulate(m, m) {
+        (i, j) => if (compatible_i2j(i)(j)) lowestMergeStrings(k1(i), k2(j)) else infScore
+      }
+
     //Map the index of a section of k2 to its position in k1.
     val solution = new Solution
 
@@ -97,23 +110,10 @@ object Prob2 extends Logging with CmdlineInput {
       freeLocationsK1(str) = currPosK1.tail
     }
 
-    val compatible_j2i = Array.tabulate(m, m) {
-        (j, i) => compatibleStrings(k2(j), k1(i))
-      }
-    //Transpose
-    val compatible_i2j = Array.tabulate(m, m) {
-        (i, j) => compatible_j2i(j)(i)
-      }
-
     def compatibleAndFree_j2i(j: Int)(i: Int): Boolean = compatible_j2i(j)(i) && !(solution.j2i contains j) && !(solution.i2j contains i)
     def compatibleAndFree_j2iView(j: Int) = (0 until m).view map compatibleAndFree_j2i(j)
     def compatibleAndFree_i2jView(i: Int) = (0 until m).view map (compatibleAndFree_j2i(_: Int)(i))
       //((j: Int) => compatibleAndFree_j2i(j)(i)/*compatible_i2j(i)(j) && !(solution.j2i contains j) && !(solution.i2j contains i)*/)
-
-    val infScore = "z"
-    val scores_i2j: Array[Array[String]] = Array.tabulate(m, m) {
-        (i, j) => if (compatible_i2j(i)(j)) lowestMergeStrings(k1(i), k2(j)) else infScore
-      }
 
     var stuffChanged = true
     while (stuffChanged) {
