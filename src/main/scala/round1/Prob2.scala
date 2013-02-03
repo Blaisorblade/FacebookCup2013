@@ -132,7 +132,7 @@ object Prob2 extends Logging with CmdlineInput {
       if (doAssignments(solution.j2i, compatibleAndFree_j2iView, solution.j2iview, false) ||
         doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, false))
         return "IMPOSSIBLE"
-      if (!stuffChanged && !doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, true))
+      if (!stuffChanged && doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, true))
         return "IMPOSSIBLE"
 
       def doAssignments(solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable, canBacktrack: Boolean) = {
