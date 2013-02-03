@@ -53,29 +53,38 @@ object Prob2 extends Logging with CmdlineInput {
     def update(a: Int, b: Int): Unit = apply(a, b)
   }
 
+  trait SolutionView extends Updateable {
+    def compatibleAndFreeView(idx: Int): Seq[Boolean]
+    def solMatrix: mutable.HashMap[Int, Int]
+  }
+
   class Solution(m: Int, compatible_j2i: Array[Array[Boolean]],
     val j2i: mutable.HashMap[Int, Int] = mutable.HashMap(),
     val i2j: mutable.HashMap[Int, Int] = mutable.HashMap()) {
 
     def dup: Solution = new Solution(m, compatible_j2i, mutable.HashMap() ++= j2i, mutable.HashMap() ++= i2j)
 
-    def j2iview: Updateable = new Updateable {
+    def compatibleAndFree_j2i(j: Int)(i: Int): Boolean = compatible_j2i(j)(i) && !(j2i contains j) && !(i2j contains i)
+    def compatibleAndFree_j2iView(j: Int) = (0 until m).view map compatibleAndFree_j2i(j)
+    def compatibleAndFree_i2jView(i: Int) = (0 until m).view map (compatibleAndFree_j2i(_: Int)(i))
+      //((j: Int) => compatibleAndFree_j2i(j)(i)/*compatible_i2j(i)(j) && !(j2i contains j) && !(i2j contains i)*/)
+
+    def j2iview: SolutionView = new SolutionView {
+        def solMatrix = j2i
+        def compatibleAndFreeView(idx: Int): Seq[Boolean] = compatibleAndFree_j2iView(idx)
         def apply(j: Int, i: Int) = {
           j2i(j) = i
           println(s"${j} -> ${i}")
           i2j(i) = j
         }
       }
-    def i2jview: Updateable = new Updateable {
+    def i2jview: SolutionView = new SolutionView {
+        def solMatrix = i2j
+        def compatibleAndFreeView(idx: Int): Seq[Boolean] = compatibleAndFree_i2jView(idx)
         def apply(i: Int, j: Int) = {
           j2iview.update(j, i)
         }
       }
-    def compatibleAndFree_j2i(j: Int)(i: Int): Boolean = compatible_j2i(j)(i) && !(j2i contains j) && !(i2j contains i)
-    def compatibleAndFree_j2iView(j: Int) = (0 until m).view map compatibleAndFree_j2i(j)
-    def compatibleAndFree_i2jView(i: Int) = (0 until m).view map (compatibleAndFree_j2i(_: Int)(i))
-      //((j: Int) => compatibleAndFree_j2i(j)(i)/*compatible_i2j(i)(j) && !(j2i contains j) && !(i2j contains i)*/)
-
   }
 
   def processTestCase(testCase: Array[String]): String = {
@@ -122,17 +131,19 @@ object Prob2 extends Logging with CmdlineInput {
     while (stuffChanged) {
       stuffChanged = false
       //Order is important here. Try everything possible before backtracking.
-      if (doAssignments(solution, solution.j2i, solution.compatibleAndFree_j2iView, solution.j2iview, false, 0) ||
-        doAssignments(solution, solution.i2j, solution.compatibleAndFree_i2jView, solution.i2jview, false, 0))
+      if (doAssignments(solution, _.j2iview, false, 0) ||
+        doAssignments(solution, _.i2jview, false, 0))
         return "IMPOSSIBLE"
       //if stuffChanged, we do another full iteration before backtracking.
-      if (!stuffChanged && doAssignments(solution, solution.i2j, solution.compatibleAndFree_i2jView, solution.i2jview, true, 0))
+      if (!stuffChanged && doAssignments(solution, _.i2jview, true, 0))
         return "IMPOSSIBLE"
 
-      def doAssignments(solution: Solution, solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable, canBacktrack: Boolean, idx: Int):
-          Boolean = {
+      def doAssignments(solution: Solution, solutionViewF: Solution => SolutionView, canBacktrack: Boolean, idx: Int): Boolean = {
+        val solutionView = solutionViewF(solution)
+        val compatibleAndFreeView: Int => Seq[Boolean] = solutionView.compatibleAndFreeView
+        val solutionMatrix: mutable.Map[Int, Int] = solutionView.solMatrix
         def recurse() =
-          doAssignments(solution, solutionMatrix, compatibleAndFreeView, solutionView, canBacktrack, idx + 1)
+          doAssignments(solution, solutionViewF, canBacktrack, idx + 1)
 
         if (idx >= m)
           false
@@ -142,7 +153,7 @@ object Prob2 extends Logging with CmdlineInput {
           val possibleAssignments = compatibleAndFreeView(idx).count(identity)
           if (possibleAssignments == 1) {
             stuffChanged = true
-            solutionView(idx) = compatibleAndFreeView(idx) indexOf true
+            solutionView(idx) = solutionView.compatibleAndFreeView(idx) indexOf true
             recurse()
           } else if (possibleAssignments == 0) {
             true
