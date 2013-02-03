@@ -119,38 +119,48 @@ object Prob2 extends Logging with CmdlineInput {
     while (stuffChanged) {
       stuffChanged = false
       //Order is important here. Try everything possible before backtracking.
-      if (doAssignments(solution.j2i, compatibleAndFree_j2iView, solution.j2iview, false) ||
-        doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, false))
+      if (doAssignments(solution.j2i, compatibleAndFree_j2iView, solution.j2iview, false, 0) ||
+        doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, false, 0))
         return "IMPOSSIBLE"
-      if (!stuffChanged && doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, true))
+      //if stuffChanged, we do another full iteration before backtracking.
+      if (!stuffChanged && doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, true, 0))
         return "IMPOSSIBLE"
 
-      def doAssignments(solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable, canBacktrack: Boolean) = {
-        var impossible = false
-        for {
-          idx <- 0 until m
-          if !(solutionMatrix contains idx)
-          possibleAssignments = compatibleAndFreeView(idx).count(identity)
-        } {
+      def doAssignments(solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable, canBacktrack: Boolean, idx: Int):
+          Boolean = {
+        def recurse() =
+          doAssignments(solutionMatrix, compatibleAndFreeView, solutionView, canBacktrack, idx + 1)
+
+        if (idx >= m)
+          false
+        else if (solutionMatrix contains idx)
+          recurse()
+        else {
+          val possibleAssignments = compatibleAndFreeView(idx).count(identity)
           if (possibleAssignments == 1) {
             stuffChanged = true
             solutionView(idx) = compatibleAndFreeView(idx) indexOf true
+            recurse()
           } else if (possibleAssignments == 0) {
-            impossible = true
+            true
           } else if (canBacktrack) {
             //Here we know that we are in the i2j case - idx is just i.
             //sort possibilities by score and remove the ones included inside another. Scores are just the result of merging.
             val possibleAssignmentsIdxs: Seq[Int] = compatibleAndFreeView(idx).zipWithIndex filter (_._1) map (_._2)
             val possibleAssignmentsScores =
               possibleAssignmentsIdxs map (j => (j, scores_i2j(idx)(j), k2(j))) sortBy (_._2) groupBy
-              (_._2) mapValues (sameScoreAssignments =>
-                sieveTheWorse(sameScoreAssignments.toList)(ass1 => ass2 => betterString(ass1._3, ass2._3)) map (idx -> _/*._1*/) toMap)
+            (_._2) mapValues (sameScoreAssignments =>
+              sieveTheWorse(sameScoreAssignments.toList)(ass1 => ass2 => betterString(ass1._3, ass2._3)) map (idx -> _/*._1*/) toMap)
             println(possibleAssignmentsScores.toSeq sortBy (_._1))
+            //Just for now.
+            recurse()
+          } else {
+            recurse()
           }
         }
-        impossible
       }
     }
+
     if (solution.i2j.size == m) {
       (for {
         i <- 0 until m
