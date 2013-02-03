@@ -10,6 +10,6 @@ scalacOptions += "-optimize"
 
 seq(SbtStartScript.startScriptForClassesSettings: _*)
 
-mainClass in Compile := Some("round1.Prob3")
+mainClass in Compile := Some("round1.Prob2")
 
 libraryDependencies += "com.codecommit" %% "gll-combinators" % "2.2-SNAPSHOT"
