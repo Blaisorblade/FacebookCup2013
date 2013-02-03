@@ -137,6 +137,7 @@ object Prob2 extends Logging with CmdlineInput {
       if (!stuffChanged && doAssignments(solution, _.i2jview, true, 0))
         return "IMPOSSIBLE"
 
+      //We just need to return the new solution.
       def doAssignments(solution: Solution, solutionViewF: Solution => SolutionView, canBacktrack: Boolean, idx: Int): Boolean = {
         val solutionView = solutionViewF(solution)
         val compatibleAndFreeView: Int => Seq[Boolean] = solutionView.compatibleAndFreeView
@@ -161,12 +162,19 @@ object Prob2 extends Logging with CmdlineInput {
             //sort possibilities by score and remove the ones included inside another. Scores are just the result of merging.
             val possibleAssignmentsIdxs: Seq[Int] = compatibleAndFreeView(idx).zipWithIndex filter (_._1) map (_._2)
             val possibleAssignmentsScores =
-              possibleAssignmentsIdxs map (j => (j, scores_i2j(idx)(j), k2(j))) sortBy (_._2) groupBy
-            (_._2) mapValues (sameScoreAssignments =>
-              sieveTheWorse(sameScoreAssignments.toList)(ass1 => ass2 => betterString(ass1._3, ass2._3)) map (idx -> _/*._1*/) toMap)
-            println(possibleAssignmentsScores.toSeq sortBy (_._1))
-            //Just for now.
-            recurse()
+              (possibleAssignmentsIdxs map (j => (j, scores_i2j(idx)(j), k2(j))) sortBy (_._2) groupBy
+                (_._2) mapValues (sameScoreAssignments =>
+              sieveTheWorse(sameScoreAssignments.toList)(ass1 => ass2 => betterString(ass1._3, ass2._3)) map (idx -> _._1) toMap)).toSeq sortBy (_._1)
+            println(possibleAssignmentsScores)
+            possibleAssignmentsScores forall {
+              case (score, choices) =>
+                choices forall {
+                  case (idx, assign) =>
+                    val newSol = solution.dup
+                    solutionView(idx) = assign
+                    doAssignments(newSol, solutionViewF, canBacktrack, idx + 1)
+                }
+            }
           } else {
             recurse()
           }
