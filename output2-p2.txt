@@ -1,0 +1,35 @@
+List()
+List(ab?)
+
+(List(ab, cd),List(c?, ab))
+1 -> 0
+0 -> 1
+Case #1: 
+
+(List(ab, ?c, ?c),List(ac, ?c, ??))
+2 -> 0
+Case #2: 
+
+(List(ab, ?c, ?c),List(aa, bb, dd))
+Case #3: IMPOSSIBLE
+
+(List(a, a),List(b, b))
+Case #4: IMPOSSIBLE
+
+(List(ab, cd),List(cd, ab))
+1 -> 0
+0 -> 1
+Case #5: 
+
+(List(?c, ?b, ??, ?c, ??),List(??, b?, bc, ?c, ??))
+Case #6: 
+
+(List(?c?b?, ??c??),List(??b?b, c?c??))
+0 -> 0
+1 -> 1
+Case #7: 
+
+(List(aa, a?),List(aa, a?))
+0 -> 0
+1 -> 1
+Case #8: 

@@ -130,13 +130,15 @@ object Prob2 extends Logging with CmdlineInput {
           j <- 0 until m
           if !(solutionMatrix contains j)
           possibleAssignments = compatibleAndFreeView(j).count(identity)
-          if possibleAssignments <= 1
         } {
           if (possibleAssignments == 1) {
             stuffChanged = true
             solutionView(j) = compatibleAndFreeView(j) indexOf true
-          } else {
+          } else if (possibleAssignments == 0) {
             impossible = true
+          } else {
+            //Do nothing yet...
+            //Later, sort possibilities by score and remove the ones included inside another.
           }
         }
         impossible
