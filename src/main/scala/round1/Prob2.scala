@@ -98,35 +98,28 @@ object Prob2 extends Logging with CmdlineInput {
     var stuffChanged = true
     while (stuffChanged) {
       stuffChanged = false
-      for {
-        j <- 0 until m
-        if !(solution.j2i contains j)
-        possibleAssignments = compatibleAndFree_j2iView(j).count(identity)
-        if possibleAssignments <= 1
-      } {
-        if (possibleAssignments == 1) {
-          stuffChanged = true
-          solution.j2iview(j) = compatibleAndFree_j2iView(j) indexOf true
-        } else {
-          return "IMPOSSIBLE"
-        }
-      }
+      if (doAssignments(solution.j2i, compatibleAndFree_j2iView, solution.j2iview) ||
+        doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview))
+        return "IMPOSSIBLE"
 
-      for {
-        i <- 0 until m
-        if !(solution.i2j contains i)
-        possibleAssignments = compatibleAndFree_i2jView(i).count(identity)
-        if possibleAssignments <= 1
-      } {
-        if (possibleAssignments == 1) {
-          stuffChanged = true
-          solution.i2jview(i) = compatibleAndFree_i2jView(i) indexOf true
-        } else {
-          return "IMPOSSIBLE"
+      def doAssignments(solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable) = {
+        var impossible = false
+        for {
+          j <- 0 until m
+          if !(solutionMatrix contains j)
+          possibleAssignments = compatibleAndFreeView(j).count(identity)
+          if possibleAssignments <= 1
+        } {
+          if (possibleAssignments == 1) {
+            stuffChanged = true
+            solutionView(j) = compatibleAndFreeView(j) indexOf true
+          } else {
+            impossible = true
+          }
         }
+        impossible
       }
     }
-
     ""
   }
 }
