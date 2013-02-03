@@ -53,11 +53,11 @@ object Prob2 extends Logging with CmdlineInput {
     def update(a: Int, b: Int): Unit = apply(a, b)
   }
 
-  class Solution(
+  class Solution(m: Int, compatible_j2i: Array[Array[Boolean]],
     val j2i: mutable.HashMap[Int, Int] = mutable.HashMap(),
     val i2j: mutable.HashMap[Int, Int] = mutable.HashMap()) {
 
-    def dup: Solution = new Solution(mutable.HashMap() ++= j2i, mutable.HashMap() ++= i2j)
+    def dup: Solution = new Solution(m, compatible_j2i, mutable.HashMap() ++= j2i, mutable.HashMap() ++= i2j)
 
     def j2iview: Updateable = new Updateable {
         def apply(j: Int, i: Int) = {
@@ -71,6 +71,11 @@ object Prob2 extends Logging with CmdlineInput {
           j2iview.update(j, i)
         }
       }
+    def compatibleAndFree_j2i(j: Int)(i: Int): Boolean = compatible_j2i(j)(i) && !(j2i contains j) && !(i2j contains i)
+    def compatibleAndFree_j2iView(j: Int) = (0 until m).view map compatibleAndFree_j2i(j)
+    def compatibleAndFree_i2jView(i: Int) = (0 until m).view map (compatibleAndFree_j2i(_: Int)(i))
+      //((j: Int) => compatibleAndFree_j2i(j)(i)/*compatible_i2j(i)(j) && !(j2i contains j) && !(i2j contains i)*/)
+
   }
 
   def processTestCase(testCase: Array[String]): String = {
@@ -100,7 +105,7 @@ object Prob2 extends Logging with CmdlineInput {
       }
 
     //Map the index of a section of k2 to its position in k1.
-    val solution = new Solution
+    val solution = new Solution(m, compatible_j2i)
 
     val freeLocationsK1 = mutable.HashMap() ++= k1Map
     for {
@@ -113,26 +118,21 @@ object Prob2 extends Logging with CmdlineInput {
       freeLocationsK1(str) = currPosK1.tail
     }
 
-    def compatibleAndFree_j2i(j: Int)(i: Int): Boolean = compatible_j2i(j)(i) && !(solution.j2i contains j) && !(solution.i2j contains i)
-    def compatibleAndFree_j2iView(j: Int) = (0 until m).view map compatibleAndFree_j2i(j)
-    def compatibleAndFree_i2jView(i: Int) = (0 until m).view map (compatibleAndFree_j2i(_: Int)(i))
-      //((j: Int) => compatibleAndFree_j2i(j)(i)/*compatible_i2j(i)(j) && !(solution.j2i contains j) && !(solution.i2j contains i)*/)
-
     var stuffChanged = true
     while (stuffChanged) {
       stuffChanged = false
       //Order is important here. Try everything possible before backtracking.
-      if (doAssignments(solution.j2i, compatibleAndFree_j2iView, solution.j2iview, false, 0) ||
-        doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, false, 0))
+      if (doAssignments(solution, solution.j2i, solution.compatibleAndFree_j2iView, solution.j2iview, false, 0) ||
+        doAssignments(solution, solution.i2j, solution.compatibleAndFree_i2jView, solution.i2jview, false, 0))
         return "IMPOSSIBLE"
       //if stuffChanged, we do another full iteration before backtracking.
-      if (!stuffChanged && doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, true, 0))
+      if (!stuffChanged && doAssignments(solution, solution.i2j, solution.compatibleAndFree_i2jView, solution.i2jview, true, 0))
         return "IMPOSSIBLE"
 
-      def doAssignments(solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable, canBacktrack: Boolean, idx: Int):
+      def doAssignments(solution: Solution, solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable, canBacktrack: Boolean, idx: Int):
           Boolean = {
         def recurse() =
-          doAssignments(solutionMatrix, compatibleAndFreeView, solutionView, canBacktrack, idx + 1)
+          doAssignments(solution, solutionMatrix, compatibleAndFreeView, solutionView, canBacktrack, idx + 1)
 
         if (idx >= m)
           false
