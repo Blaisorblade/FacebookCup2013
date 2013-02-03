@@ -54,8 +54,11 @@ object Prob2 extends Logging with CmdlineInput {
   }
 
   class Solution(
-      val j2i: mutable.HashMap[Int, Int] = mutable.HashMap[Int, Int](),
-      val i2j: mutable.HashMap[Int, Int] = mutable.HashMap[Int, Int]()) {
+    val j2i: mutable.HashMap[Int, Int] = mutable.HashMap(),
+    val i2j: mutable.HashMap[Int, Int] = mutable.HashMap()) {
+
+    def dup: Solution = new Solution(mutable.HashMap() ++= j2i, mutable.HashMap() ++= i2j)
+
     def j2iview: Updateable = new Updateable {
         def apply(j: Int, i: Int) = {
           j2i(j) = i
