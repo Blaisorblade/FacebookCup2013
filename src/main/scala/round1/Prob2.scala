@@ -16,7 +16,6 @@ object Prob2 extends Logging with CmdlineInput {
       case _ => throw new IllegalArgumentException("Incompatible characters cannot be merged!")
     }
   def lowestMergeStrings(s1: String, s2: String): String = (s1 zip s2 map (lowestMergeCh _).tupled).mkString
-  println(lowestMergeStrings("?a", "??"))
   assert(lowestMergeStrings("?a", "??") == "aa")
   /*
   //
