@@ -67,7 +67,6 @@ object Prob2 extends Logging with CmdlineInput {
     def compatibleAndFree_j2i(j: Int)(i: Int): Boolean = compatible_j2i(j)(i) && !(j2i contains j) && !(i2j contains i)
     def compatibleAndFree_j2iView(j: Int) = (0 until m).view map compatibleAndFree_j2i(j)
     def compatibleAndFree_i2jView(i: Int) = (0 until m).view map (compatibleAndFree_j2i(_: Int)(i))
-      //((j: Int) => compatibleAndFree_j2i(j)(i)/*compatible_i2j(i)(j) && !(j2i contains j) && !(i2j contains i)*/)
 
     def j2iview: SolutionView = new SolutionView {
         def solMatrix = j2i
