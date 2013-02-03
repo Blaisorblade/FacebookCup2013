@@ -28,7 +28,7 @@ object Prob2 extends Logging with CmdlineInput {
       s match {
         case h :: t =>
           val newTail = sieve(t) filterNot cmp(h)
-          if (t exists (cmp(_)(h)))
+          if (newTail exists (cmp(_)(h)))
             newTail
           else
             h :: newTail
@@ -39,6 +39,7 @@ object Prob2 extends Logging with CmdlineInput {
   def sieveTheWorseStr(strs: List[String]) = sieveTheWorse(strs)((betterString _).curried)
   println(sieveTheWorseStr(List("ab?", "a??", "?b?", "ab?")))
   println(sieveTheWorseStr(List("a??", "?b?", "ab?")))
+  println(sieveTheWorseStr(List("??", "??")))
   assert(sieveTheWorseStr(List("a??", "?b?", "ab?")) == "ab?" :: Nil)
   assert(sieveTheWorseStr(List("a??", "?b?", "ab?", "??c")) == "ab?" :: "??c" :: Nil)
 
