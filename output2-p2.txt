@@ -4,7 +4,7 @@ List(ab?)
 (List(ab, cd),List(c?, ab))
 1 -> 0
 0 -> 1
-Case #1: 
+Case #1: abcd
 
 (List(ab, ?c, ?c),List(ac, ?c, ??))
 2 -> 0
@@ -19,7 +19,7 @@ Case #4: IMPOSSIBLE
 (List(ab, cd),List(cd, ab))
 1 -> 0
 0 -> 1
-Case #5: 
+Case #5: abcd
 
 (List(?c, ?b, ??, ?c, ??),List(??, b?, bc, ?c, ??))
 Case #6: 
@@ -27,9 +27,9 @@ Case #6:
 (List(?c?b?, ??c??),List(??b?b, c?c??))
 0 -> 0
 1 -> 1
-Case #7: 
+Case #7: acbbbcacaa
 
 (List(aa, a?),List(aa, a?))
 0 -> 0
 1 -> 1
-Case #8: 
+Case #8: aaaa

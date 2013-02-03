@@ -121,7 +121,7 @@ object Prob2 extends Logging with CmdlineInput {
       //((j: Int) => compatibleAndFree_j2i(j)(i)/*compatible_i2j(i)(j) && !(solution.j2i contains j) && !(solution.i2j contains i)*/)
 
     val infScore = "z"
-    val scores_i2j = Array.tabulate(m, m) {
+    val scores_i2j: Array[Array[String]] = Array.tabulate(m, m) {
         (i, j) => if (compatible_i2j(i)(j)) lowestMergeStrings(k1(i), k2(j)) else infScore
       }
 
@@ -155,6 +155,11 @@ object Prob2 extends Logging with CmdlineInput {
         impossible
       }
     }
-    ""
+    if (solution.i2j.size == m) {
+      (for {
+        i <- 0 until m
+        j = solution.i2j(i)
+      } yield scores_i2j(i)(j)).mkString
+    } else ""
   }
 }
