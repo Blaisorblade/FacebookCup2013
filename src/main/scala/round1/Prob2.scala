@@ -34,14 +34,25 @@ object Prob2 extends Logging with CmdlineInput {
     processInput(lines.grouped(3).toSeq, m)(processTestCase)
   }
 
+  trait Updateable extends ((Int, Int) => Unit) {
+    def update(a: Int, b: Int): Unit = apply(a, b)
+  }
+
   class Solution(
       val j2i: mutable.HashMap[Int, Int] = mutable.HashMap[Int, Int](),
       val i2j: mutable.HashMap[Int, Int] = mutable.HashMap[Int, Int]()) {
-    def update(j: Int, i: Int) = {
-      j2i(j) = i
-      println(s"${j} -> ${i}")
-      i2j(i) = j
-    }
+    def j2iview: Updateable = new Updateable {
+        def apply(j: Int, i: Int) = {
+          j2i(j) = i
+          println(s"${j} -> ${i}")
+          i2j(i) = j
+        }
+      }
+    def i2jview: Updateable = new Updateable {
+        def apply(i: Int, j: Int) = {
+          j2iview.update(j, i)
+        }
+      }
   }
 
   def processTestCase(testCase: Array[String]): String = {
@@ -67,7 +78,7 @@ object Prob2 extends Logging with CmdlineInput {
       currPosK1: List[Int] = freeLocationsK1(str)
       if currPosK1.nonEmpty
     } {
-      solution(j) = currPosK1.head
+      solution.j2iview(j) = currPosK1.head
       freeLocationsK1(str) = currPosK1.tail
     }
 
@@ -95,7 +106,7 @@ object Prob2 extends Logging with CmdlineInput {
       } {
         if (possibleAssignments == 1) {
           stuffChanged = true
-          solution(j) = compatibleAndFree_j2iView(j) indexOf true
+          solution.j2iview(j) = compatibleAndFree_j2iView(j) indexOf true
         } else {
           return "IMPOSSIBLE"
         }
@@ -109,7 +120,7 @@ object Prob2 extends Logging with CmdlineInput {
       } {
         if (possibleAssignments == 1) {
           stuffChanged = true
-          solution(compatibleAndFree_i2jView(i) indexOf true) = i
+          solution.i2jview(i) = compatibleAndFree_i2jView(i) indexOf true
         } else {
           return "IMPOSSIBLE"
         }
