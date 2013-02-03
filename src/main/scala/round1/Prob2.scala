@@ -169,9 +169,7 @@ object Prob2 extends Logging with CmdlineInput {
               } {
                 val newSol = solution.dup
                 solutionViewF(newSol)(idx) = assign
-                //Better approach:
-                //mainLoop(solution)
-                doAssignments(newSol, solutionViewF, canBacktrack, idx + 1) match {
+                mainLoop(newSol) match {
                   case s @ Some(solution) =>
                     finalSolution = s
                     break

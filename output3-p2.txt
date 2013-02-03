@@ -1,0 +1,4 @@
+Case #1: ffaa
+Case #2: aaff
+Case #3: aaaaaaaaaaaabbbbbbbbbbbbccccccccccccddddddddddddeeeeeeeeeeeeffffffffffffaaab
+Case #4: aaaaaabaaabfaacaabaaabafacabadafbaaabaefbafabcaacdeadafbfdabdfeaedbffaaeadbafdeecfefdccddbfacadaabca
