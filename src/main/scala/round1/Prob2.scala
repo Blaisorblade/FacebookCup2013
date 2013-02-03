@@ -130,13 +130,13 @@ object Prob2 extends Logging with CmdlineInput {
       def doAssignments(solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable, canBacktrack: Boolean) = {
         var impossible = false
         for {
-          j <- 0 until m
-          if !(solutionMatrix contains j)
-          possibleAssignments = compatibleAndFreeView(j).count(identity)
+          idx <- 0 until m
+          if !(solutionMatrix contains idx)
+          possibleAssignments = compatibleAndFreeView(idx).count(identity)
         } {
           if (possibleAssignments == 1) {
             stuffChanged = true
-            solutionView(j) = compatibleAndFreeView(j) indexOf true
+            solutionView(idx) = compatibleAndFreeView(idx) indexOf true
           } else if (possibleAssignments == 0) {
             impossible = true
           } else if (canBacktrack) {
