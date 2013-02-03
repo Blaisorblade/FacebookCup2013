@@ -2,3 +2,9 @@ Case #1: ffaa
 Case #2: aaff
 Case #3: aaaaaaaaaaaabbbbbbbbbbbbccccccccccccddddddddddddeeeeeeeeeeeeffffffffffffaaab
 Case #4: aaaaaabaaabfaacaabaaabafacabadafbaaabaefbafabcaacdeadafbfdabdfeaedbffaaeadbafdeecfefdccddbfacadaabca
+Case #5: a
+Case #6: a
+Case #7: a
+Case #8: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Case #9: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+Case #10: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
