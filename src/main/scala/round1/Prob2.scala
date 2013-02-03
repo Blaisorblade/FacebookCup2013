@@ -2,6 +2,7 @@ package round1
 import util._
 import collection.mutable
 import language.postfixOps
+import scala.util.control.Breaks._
 
 object Prob2 extends Logging with CmdlineInput {
   def compatibleChars(ch1: Char, ch2: Char) = ch1 == '?' || ch2 == '?' || ch1 == ch2
@@ -126,19 +127,12 @@ object Prob2 extends Logging with CmdlineInput {
       freeLocationsK1(str) = currPosK1.tail
     }
 
-    var stuffChanged = true
-    while (stuffChanged) {
-      stuffChanged = false
-      //Order is important here. Try everything possible before backtracking.
-      if (doAssignments(solution, _.j2iview, false, 0) ||
-        doAssignments(solution, _.i2jview, false, 0))
-        return "IMPOSSIBLE"
-      //if stuffChanged, we do another full iteration before backtracking.
-      if (!stuffChanged && doAssignments(solution, _.i2jview, true, 0))
-        return "IMPOSSIBLE"
+    def mainLoop(solution: Solution): Option[Solution] = {
+      var stuffChanged = true
 
       //We just need to return the new solution.
-      def doAssignments(solution: Solution, solutionViewF: Solution => SolutionView, canBacktrack: Boolean, idx: Int): Boolean = {
+      //Now: true = impossible (no new solution), false -> there is a new solution.
+      def doAssignments(solution: Solution, solutionViewF: Solution => SolutionView, canBacktrack: Boolean, idx: Int): Option[Solution] = {
         val solutionView = solutionViewF(solution)
         val compatibleAndFreeView: Int => Seq[Boolean] = solutionView.compatibleAndFreeView
         val solutionMatrix: mutable.Map[Int, Int] = solutionView.solMatrix
@@ -146,7 +140,7 @@ object Prob2 extends Logging with CmdlineInput {
           doAssignments(solution, solutionViewF, canBacktrack, idx + 1)
 
         if (idx >= m)
-          false
+          Some(solution)
         else if (solutionMatrix contains idx)
           recurse()
         else {
@@ -156,7 +150,7 @@ object Prob2 extends Logging with CmdlineInput {
             solutionView(idx) = solutionView.compatibleAndFreeView(idx) indexOf true
             recurse()
           } else if (possibleAssignments == 0) {
-            true
+            None
           } else if (canBacktrack) {
             //Here we know that we are in the i2j case - idx is just i.
             //sort possibilities by score and remove the ones included inside another. Scores are just the result of merging.
@@ -166,27 +160,69 @@ object Prob2 extends Logging with CmdlineInput {
                 (_._2) mapValues (sameScoreAssignments =>
               sieveTheWorse(sameScoreAssignments.toList)(ass1 => ass2 => betterString(ass1._3, ass2._3)) map (idx -> _._1) toMap)).toSeq sortBy (_._1)
             println(possibleAssignmentsScores)
-            possibleAssignmentsScores forall {
-              case (score, choices) =>
-                choices forall {
-                  case (idx, assign) =>
-                    val newSol = solution.dup
-                    solutionView(idx) = assign
-                    doAssignments(newSol, solutionViewF, canBacktrack, idx + 1)
+
+            var finalSolution: Option[Solution] = None
+            breakable {
+              for {
+                (score, choices) <- possibleAssignmentsScores
+                (idx, assign) <- choices
+              } {
+                val newSol = solution.dup
+                solutionView(idx) = assign
+                //Better approach:
+                //mainLoop(solution)
+                doAssignments(newSol, solutionViewF, canBacktrack, idx + 1) match {
+                  case s @ Some(solution) =>
+                    finalSolution = s
+                    break
+                  case None =>
                 }
+              }
             }
+            finalSolution
           } else {
             recurse()
           }
         }
       }
+
+      var currSolution: Option[Solution] = Some(solution)
+      while (stuffChanged) {
+        stuffChanged = false
+        //Order is important here. Try everything possible before backtracking.
+        currSolution =
+          for {
+            sol0 <- currSolution
+            sol1 <- doAssignments(sol0, _.j2iview, false, 0)
+            sol2 <- doAssignments(sol1, _.i2jview, false, 0)
+            sol3 <- if (!stuffChanged)
+              doAssignments(sol2, _.i2jview, true, 0)
+            else //if stuffChanged, we do another full iteration before backtracking.
+              Some(sol2)
+          } yield sol3
+      }
+      currSolution
     }
 
-    if (solution.i2j.size == m) {
-      (for {
-        i <- 0 until m
-        j = solution.i2j(i)
-      } yield scores_i2j(i)(j)).mkString
-    } else ""
+
+      /*
+      if (doAssignments(solution, _.j2iview, false, 0) ||
+        doAssignments(solution, _.i2jview, false, 0))
+        return "IMPOSSIBLE"
+      if (!stuffChanged && doAssignments(solution, _.i2jview, true, 0))
+        return "IMPOSSIBLE"
+       */
+
+    mainLoop(solution) match {
+      case None =>
+        "IMPOSSIBLE"
+      case Some(currSolution) =>
+        if (currSolution.i2j.size == m) {
+          (for {
+            i <- 0 until m
+            j = solution.i2j(i)
+          } yield scores_i2j(i)(j)).mkString
+        } else ""
+    }
   }
 }
