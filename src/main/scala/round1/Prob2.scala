@@ -168,7 +168,7 @@ object Prob2 extends Logging with CmdlineInput {
                 (idx, assign) <- choices
               } {
                 val newSol = solution.dup
-                solutionView(idx) = assign
+                solutionViewF(newSol)(idx) = assign
                 //Better approach:
                 //mainLoop(solution)
                 doAssignments(newSol, solutionViewF, canBacktrack, idx + 1) match {
@@ -220,7 +220,7 @@ object Prob2 extends Logging with CmdlineInput {
         if (currSolution.i2j.size == m) {
           (for {
             i <- 0 until m
-            j = solution.i2j(i)
+            j = currSolution.i2j(i)
           } yield scores_i2j(i)(j)).mkString
         } else ""
     }
