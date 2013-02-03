@@ -5,6 +5,28 @@ import collection.mutable
 object Prob2 extends Logging with CmdlineInput {
   def compatibleChars(ch1: Char, ch2: Char) = ch1 == '?' || ch2 == '?' || ch1 == ch2
   def compatibleStrings(s1: String, s2: String) = s1 zip s2 forall (compatibleChars _).tupled
+
+  def lowestMergeCh(ch1: Char, ch2: Char) =
+    (ch1, ch2) match {
+      case ('?', '?') => 'a'
+      case ('?', _) => ch2
+      case (_, '?') => ch1
+      case _ if ch1 == ch2 =>
+        ch1
+      case _ => throw new IllegalArgumentException("Incompatible characters cannot be merged!")
+    }
+  def lowestMergeStrings(s1: String, s2: String) = s1 zip s2 map (lowestMergeCh _).tupled
+
+  def mergeScore(s1: String, s2: String): Int = {
+    (lowestMergeStrings(s1, s2) map (_ - 'a') foldLeft 0) {
+      (acc, newEl) => 6 * acc + newEl
+    }
+  }
+
+  assert(mergeScore("?a", "??") == 0)
+  assert(mergeScore("?a", "b?") == 6)
+  assert(mergeScore("?a", "c?") == 12)
+
   //ch1 better than ch2?
   def betterChar(ch1: Char, ch2: Char) = ch2 == '?' || ch1 == ch2
   def betterString(s1: String, s2: String) = s1 zip s2 forall (betterChar _).tupled
