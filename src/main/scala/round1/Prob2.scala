@@ -120,11 +120,14 @@ object Prob2 extends Logging with CmdlineInput {
     var stuffChanged = true
     while (stuffChanged) {
       stuffChanged = false
-      if (doAssignments(solution.j2i, compatibleAndFree_j2iView, solution.j2iview) ||
-        doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview))
+      //Order is important here. Try everything possible before backtracking.
+      if (doAssignments(solution.j2i, compatibleAndFree_j2iView, solution.j2iview, false) ||
+        doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, false))
+        return "IMPOSSIBLE"
+      if (!stuffChanged && !doAssignments(solution.i2j, compatibleAndFree_i2jView, solution.i2jview, true))
         return "IMPOSSIBLE"
 
-      def doAssignments(solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable) = {
+      def doAssignments(solutionMatrix: mutable.Map[Int, Int], compatibleAndFreeView: Int => Seq[Boolean], solutionView: Updateable, canBacktrack: Boolean) = {
         var impossible = false
         for {
           j <- 0 until m
@@ -136,9 +139,9 @@ object Prob2 extends Logging with CmdlineInput {
             solutionView(j) = compatibleAndFreeView(j) indexOf true
           } else if (possibleAssignments == 0) {
             impossible = true
-          } else {
-            //Do nothing yet...
-            //Later, sort possibilities by score and remove the ones included inside another.
+          } else if (canBacktrack) {
+            //sort possibilities by score and remove the ones included inside another.
+            val possibleAssignmentsIdxs: Seq[Int] = compatibleAndFreeView(j).zipWithIndex filter (_._1) map (_._2)
           }
         }
         impossible
