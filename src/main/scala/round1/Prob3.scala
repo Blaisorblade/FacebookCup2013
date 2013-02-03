@@ -63,7 +63,7 @@ object Prob3 extends Logging with CmdlineInput with Timing {
           else
             pixel2Envelope(p)
         //println(env)
-        tree.insert(env, null)//(env, p))
+        tree.insert(env, env)//(env, p))
       }
       var count = 0
       for {
